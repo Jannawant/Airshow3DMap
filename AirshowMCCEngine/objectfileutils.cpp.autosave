@@ -1,0 +1,14 @@
+#include <stdlib.h>
+#include <stdio.h>
+
+void readObjectFile()
+{
+    FILE  *file = fopen("earth.obj","r");
+    if(file == NULL)
+    {
+        cout<<"impossible open file"<<endl;
+          
+    }
+    wh
+}
+
