@@ -1,0 +1,69 @@
+#ifndef GAMECODESTD_H
+#define GAMECODESTD_H
+
+typedef D3DXCOLOR Color;
+
+extern Color g_White;
+extern Color g_Black;
+extern Color g_Cyan;
+extern Color g_Red;
+extern Color g_Green;
+extern Color g_Blue;
+extern Color g_Yellow;
+extern Color g_Gray40;
+extern Color g_Gray25;
+extern Color g_Gray65;
+extern Color g_Transparent;
+
+extern Vec3 g_Up;
+extern Vec3 g_Right;
+extern Vec3 g_Forward;
+
+extern Vec4 g_Up4;
+extern Vec4 g_Right4;
+extern Vec4 g_Forward4;
+
+#if defined(_DEBUG)
+#	define GCC_NEW new(_NORMAL_BLOCK,__FILE__, __LINE__)
+#else
+#	define GCC_NEW new
+#endif
+
+// Useful #defines
+
+extern const float fOPAQUE;
+extern const int iOPAQUE;
+extern const float fTRANSPARENT;
+extern const int iTRANSPARENT;
+
+extern const int MEGABYTE;
+extern const float SIXTY_HERTZ;
+
+extern const int SCREEN_WIDTH;
+extern const int SCREEN_HEIGHT;
+
+#if !defined(SAFE_DELETE)
+    #define SAFE_DELETE(x) if(x) delete x; x=NULL;
+#endif
+
+#if !defined(SAFE_DELETE_ARRAY)
+    #define SAFE_DELETE_ARRAY(x) if (x) delete [] x; x=NULL;
+#endif
+
+#if !defined(SAFE_RELEASE)
+    #define SAFE_RELEASE(x) if(x) x->Release(); x=NULL;
+#endif
+
+#ifdef UNICODE
+    #define _tcssprintf wsprintf
+    #define tcsplitpath _wsplitpath
+#else
+    #define _tcssprintf sprintf
+    #define tcsplitpath _splitpath
+#endif
+
+#define __STR2__(x) #x
+#define __STR1__(x) __STR2__(x)
+#define __LOC__ __FILE__ "("__STR1__(__LINE__)") : Warning Msg: "
+
+#endif // GAMECODESTD_H

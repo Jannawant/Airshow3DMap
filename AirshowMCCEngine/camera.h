@@ -5,47 +5,60 @@
 #include <glm/vec3.hpp>
 #include <glm/vec4.hpp>
 #include <glm/gtx/quaternion.hpp>
+#include <Graphics3D/scenenode.h>
+#include "Graphics3D/geometry.h"
 
 class Camera
 {
 public:
     Camera();
     Camera(int screenWidth, int screenHeight);
-
+    void init(Scene *scene);
     void SetViewPort(int x, int y, int width, int height);
-    glm::vec4 GetViewPort() const;
+    Vec4 GetViewPort() const;
 
     void SetProjectionRH(float fov, float aspectRatio, float zNear, float zFar);
     void ApplyViewMatrix();
-    void SetPosition(const glm::vec3& pos);
-    glm::vec3 GetPosition() const;
+    void SetPosition(const Vec3& pos);
+    Vec3 GetPosition() const;
 
     //Translate the camera by some amount. If local is TRUE(default) then the translation should
     //be applied int local-space of the camera. If local is FALSE, then the translation is
     //applied in world-space.
-    void Translate(const glm::vec3 & delta, bool local = true);
+    void Translate(const Vec3 & delta, bool local = true);
 
-    void SetRotation(const glm::quat& rot);
-    glm::quat GetRotation() const;
+    void SetRotation(const Quaternion& rot);
+    Quaternion GetRotation() const;
 
-    void SetEulerAngles(const glm::vec3& eulerAngles);
-    glm::vec3 GetEulerAngles() const;
+    void SetEulerAngles(const Vec3& eulerAngles);
+    Vec3 GetEulerAngles() const;
 
     //Rotate the camera by some amount
-    void Rotate(const glm::quat& rot);
+    void Rotate(const Quaternion& rot);
 
-    glm::mat4 GetProjectionMatrix() const;
-    glm::mat4 GetViewMatrix();
+    Mat4x4 GetProjectionMatrix() const;
+    Mat4x4 GetViewMatrix();
+
+    void setMoveSpeed(double speed){m_moveSpeed = speed; }
+    void moveUp();
+    void moveDown();
+    void moveLeft();
+    void moveRight();
 
 protected:
     void UpdateViewMatrix();
-    glm::vec4 m_Viewport;
-    glm::vec3 m_Position;
-    glm::quat m_Rotation;
-    glm::mat4 m_ProectionMatrix;
-    glm::mat4 m_ViewMatrix;
+    Vec4 m_Viewport;
+    Vec3 m_Position;
+    Quaternion m_Rotation;
+    Mat4x4 m_ProectionMatrix;
+    Mat4x4 m_ViewMatrix;
 private:
+    shared_ptr<CameraNode> m_pCameraNode;
+    int m_width;
+    int m_height;
     bool m_ViewDirty;
+    bool m_isFree;
+    double m_moveSpeed;
 };
 
 #endif // CAMERA_H

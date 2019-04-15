@@ -77,7 +77,6 @@ typedef struct {
 
 typedef struct {
   std::string name;
-
   std::vector<int> intValues;
   std::vector<float> floatValues;
   std::vector<std::string> stringValues;
@@ -168,6 +167,8 @@ private:
   std::string m_mtlBasePath;
 };
 
+
+
 /// Loads .obj from a file.
 /// 'shapes' will be filled with parsed shape data
 /// The function returns error string.
@@ -181,6 +182,13 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
              const char *filename, const char *mtl_basepath = NULL,
              unsigned int flags = 1);
 
+/// Loads .obj from rawBuffer //My add
+bool LoadObj(std::vector<shape_t> &shapes,       // [output]
+             std::vector<material_t> &materials, // [output]
+             std::string &err,                   // [output]
+             char *fileBuffer, int size, const char *mtl_basepath,
+             unsigned int flags = 1);
+
 /// Loads object from a std::istream, uses GetMtlIStreamFn to retrieve
 /// std::istream for materials.
 /// Returns true when loading .obj become success.
@@ -190,6 +198,8 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
              std::string &err,                   // [output]
              std::istream &inStream, MaterialReader &readMatFn,
              unsigned int flags = 1);
+
+
 
 /// Loads materials into std::map
 void LoadMtl(std::map<std::string, int> &material_map, // [output]
@@ -207,10 +217,25 @@ void LoadMtl(std::map<std::string, int> &material_map, // [output]
 
 #include <fstream>
 #include <sstream>
+#include <streambuf>
+#include <iostream>
 
 #include "tiny_obj_loader.h"
 
+
 namespace tinyobj {
+
+struct membuf : std::streambuf
+{
+    membuf(char * begin, char * end)
+    {
+        //std::cout<<"begin streambuf= "<<begin<<std::endl;
+        //std::cout<<"end streambuf= "<<end<<std::endl;
+        //std::cout<<"size = "<<end-begin<<std::endl;
+        this->setg(begin, begin, end);
+    }
+};
+
 
 MaterialReader::~MaterialReader() {}
 
@@ -981,6 +1006,29 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
 
 bool LoadObj(std::vector<shape_t> &shapes,       // [output]
              std::vector<material_t> &materials, // [output]
+             std::string &err,                   // [output]
+             char *fileBuffer,int size, const char *mtl_basepath,
+             unsigned int flags) {
+
+    membuf sbuf(fileBuffer, fileBuffer+size);
+    std::istream in(&sbuf);
+
+    shapes.clear();
+
+    std::stringstream errss;
+
+    std::string basePath;
+    if (mtl_basepath) {
+      basePath = mtl_basepath;
+    }
+    MaterialFileReader matFileReader(basePath);
+
+    std::cout<<"run loadObj from stream in"<<std::endl;
+    return LoadObj(shapes, materials, err, in, matFileReader, flags);
+}
+
+bool LoadObj(std::vector<shape_t> &shapes,       // [output]
+             std::vector<material_t> &materials, // [output]
              std::string &err, std::istream &inStream,
              MaterialReader &readMatFn, unsigned int flags) {
 
@@ -1003,7 +1051,6 @@ bool LoadObj(std::vector<shape_t> &shapes,       // [output]
   while (inStream.peek() != -1) {
     std::string linebuf;
     safeGetline(inStream, linebuf);
-
     // Trim newline '\r\n' or '\n'
     if (linebuf.size() > 0) {
       if (linebuf[linebuf.size() - 1] == '\n')

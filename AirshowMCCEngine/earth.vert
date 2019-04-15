@@ -27,6 +27,6 @@ void main()
    //fragNormal = normalize(g_vNormal);
    fragNormal = vec3(g_matModelView * vec4(g_vNormal, 0.0));
    fragTexCoord = g_vTexCoord;
-   gl_PointSize = 4.0;
+   gl_PointSize = 5.0;
    gl_Position = g_matProj * vPositionES;
 }

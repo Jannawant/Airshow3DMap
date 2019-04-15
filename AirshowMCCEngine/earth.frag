@@ -15,10 +15,11 @@ uniform vec3 lightPos;
 void main()
 {
     float distance = length(lightPos - fragPosition);
+    vec3 lightPos = normalize(vec3(1.0,1.0,1.5));
     vec3 lightVector = normalize(lightPos - fragPosition);
     float diffuse = max(dot(fragNormal, lightVector),0.0);
     diffuse = diffuse * (1.0 / (1.0 + (0.10 * distance)));
-    diffuse = diffuse + 0.6;
+    diffuse = diffuse + 0.3;
     vec4 baseColor = texture2D(s_texture, fragTexCoord);
     vec4 bumpColor = texture2D(s_bumpMap, fragTexCoord);
     vec4 temp = mix(bumpColor, baseColor, 0.4);
